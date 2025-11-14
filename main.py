@@ -20,30 +20,30 @@ def start_interview(job_chosen, resume_file, nb_questions):
     globals.job_choice = job_chosen
     if resume_file is not None:
         globals.resume_summary = summarize_resume(resume_file)
-    globals.nb_questions = nb_questions
+    globals.max_question_amount = nb_questions
+    globals.question_count = 1
     first_question = generate_response(globals.interview_prompt_filepath)
+    globals.chat_history.append({"role": "assistant", "content": first_question})
     return [
         gr.update(visible=False), gr.update(visible=False), gr.update(visible=False), gr.update(visible=False),
         gr.update(visible=True, value=first_question), gr.update(visible=True), gr.update(visible=True)
     ]
 
-# submit answer button
 def pipeline(audio_path):
-    # Transcript the user audio and store int
     transcript = transcribe_audio(audio_path)
-    globals.chat_history.append({"role" : "user", "content": transcript})
+    globals.chat_history.append({"role": "user", "content": transcript})
 
     if globals.question_count < globals.max_question_amount:
-        # Generates answer, stores it and returns data
         response = generate_response(globals.interview_prompt_filepath)
-        globals.chat_history.append({"role" : "assistant", "content": response})
+        globals.chat_history.append({"role": "assistant", "content": response})
         globals.question_count += 1
         return response, gr.update(value=None), gr.update(), gr.update()
     else:
-        # Generates results, resets vars, and switch element visibility
+        # Fin
         response = generate_response(globals.results_prompt_filepath)
-        globals.chat_history.clear()
+        globals.reset()
         return response, gr.update(value=None, visible=False), gr.update(visible=False), gr.update(visible=True)
+
 
 # restart button
 def reset_interview():

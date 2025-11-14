@@ -10,8 +10,7 @@ summarize_resume_prompt_filepath = "prompts/summarize_resume_prompt.txt"
 ##########################################################
 
 
-## Dynamically changed variables
-
+# Dynamically changed variables
 chat_history = []
 job_choice = "non défini"
 max_question_amount = 3
@@ -19,7 +18,9 @@ question_count = 1
 resume_summary = ""
 
 def reset():
+    global chat_history, job_choice, max_question_amount, question_count, resume_summary
     chat_history = []
     job_choice = "non défini"
     question_count = 1
     resume_summary = ""
+    max_question_amount = 3
