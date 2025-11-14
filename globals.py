@@ -1,7 +1,7 @@
 ## Pre-launch customizable variables
 
 interview_prompt_filepath = "prompts/interview_prompt.txt"
-generative_ai_model = "mistral"
+generative_ai_model = "llama3.1:8b"
 generative_ai_url = "http://localhost:11434/api/generate"
 results_prompt_filepath = "prompts/results_prompt.txt"
 summarize_resume_prompt_filepath = "prompts/summarize_resume_prompt.txt"

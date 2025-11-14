@@ -23,7 +23,7 @@ in either this or your other projects.
 First, you need to set up the generative IA:
 
 ```shell
-ollama pull mistral
+ollama pull llama3.1:8b
 ```
 
 If you **don't** use Ollama desktop app, you also need to manually start the server with:
