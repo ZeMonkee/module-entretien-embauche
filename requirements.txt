@@ -1,0 +1,6 @@
+gradio
+faster-whisper
+requests
+ctranslate2
+pdfplumber
+python-docx
