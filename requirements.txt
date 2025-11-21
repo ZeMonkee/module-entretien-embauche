@@ -4,3 +4,6 @@ requests
 ctranslate2
 pdfplumber
 python-docx
+pyttsx3
+coqui-tts
+simpleaudio

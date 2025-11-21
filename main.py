@@ -4,10 +4,27 @@ from audio_utils import transcribe_audio
 from llm_client import generate_response, summarize_resume
 import globals
 
+import pyttsx3
+from TTS.api import TTS
+import simpleaudio as sa
+import numpy as np
+
+tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
+
+tts_engine = pyttsx3.init()
 
 ### Function and vars ###
 
 ## Short functions
+
+def speak(text: str):
+    tts_engine.say(text)
+    tts_engine.runAndWait()
+
+def speak_output(text: str):
+    if text:
+        speak(text)
+    return text
 
 def change_interactivity(enable: bool):
     return gr.update(interactive=enable)
@@ -76,11 +93,38 @@ with gr.Blocks() as app:
     reset_interview_btn =   gr.Button("Recommencer un entretien", visible=False)
 
     # Function assignation
-    submit_job_btn.click(fn=start_interview, inputs=[job_choice_input, resume_input, nb_question_input], outputs=[job_choice_input, resume_input, nb_question_input, submit_job_btn, assistant_output, user_answer_input, submit_answer_btn])
+    submit_job_btn.click(
+        fn=start_interview,
+        inputs=[job_choice_input,
+                resume_input,
+                nb_question_input],
+        outputs=[job_choice_input,
+                 resume_input,
+                 nb_question_input,
+                 submit_job_btn,
+                 assistant_output,
+                 user_answer_input,
+                 submit_answer_btn]
+    ).then(
+        fn=speak_output,
+        inputs=assistant_output,
+        outputs=None
+    )
 
     user_answer_input.clear(fn=lambda: change_interactivity(False), outputs=submit_answer_btn)
     user_answer_input.stop_recording(fn=lambda: change_interactivity(True), outputs=submit_answer_btn)
-    submit_answer_btn.click(fn=pipeline, inputs=user_answer_input, outputs=[assistant_output, user_answer_input, submit_answer_btn, reset_interview_btn])
+    submit_answer_btn.click(
+        fn=pipeline,
+        inputs=user_answer_input,
+        outputs=[assistant_output,
+                 user_answer_input,
+                 submit_answer_btn,
+                 reset_interview_btn]
+    ).then(
+        fn=speak_output,
+        inputs=assistant_output,
+        outputs=None
+    )
 
     reset_interview_btn.click(fn=reset_interview, outputs=[assistant_output, reset_interview_btn, job_choice_input, resume_input, nb_question_input, submit_job_btn])
 
