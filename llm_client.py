@@ -43,12 +43,13 @@ def load_prompt(prompt_filepath):
         "\n".join(
             f"{'User' if m['role']=='user' else 'Assistant'}: {m['content']}"
             for m in globals.chat_history
-        ) + "\nAssistant:"
+        )
     )
     return prompt
 
 def generate_response(prompt_filepath, additional_prompt_text=""):
     prompt = load_prompt(prompt_filepath) + additional_prompt_text
+    print(prompt)
     try:
         response = requests.post(globals.generative_ai_url, json={
             "model": globals.generative_ai_model,
