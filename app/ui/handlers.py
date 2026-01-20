@@ -184,7 +184,6 @@ def start_interview(job_chosen: str, resume_file, nb_questions: int):
         gr.update(visible=False),  # resume_section
         gr.update(visible=False),  # questions_section
         gr.update(visible=False),  # summary_section
-        gr.update(visible=False),  # loading_section
         gr.update(visible=True),   # interview_section
         gr.update(value=progress_html),  # progress_indicator
         gr.update(value=first_question),  # assistant_output
