@@ -258,9 +258,6 @@ def create_app() -> gr.Blocks:
         
         # Start interview from summary
         start_interview_btn.click(
-            fn=show_loading_page,
-            outputs=all_sections
-        ).then(
             fn=start_interview,
             inputs=[job_choice_input, resume_input, nb_question_input],
             outputs=[
@@ -269,7 +266,6 @@ def create_app() -> gr.Blocks:
                 resume_section,
                 questions_section,
                 summary_section,
-                loading_section,
                 interview_section,
                 progress_indicator,
                 assistant_output,
@@ -318,7 +314,6 @@ def create_app() -> gr.Blocks:
                 resume_section,
                 questions_section,
                 summary_section,
-                loading_section,
                 interview_section,
                 progress_indicator,
                 assistant_output,
