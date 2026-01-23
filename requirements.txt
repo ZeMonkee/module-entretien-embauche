@@ -10,7 +10,6 @@ simpleaudio
 edge-tts
 pygame
 torch
-bark
 numpy
 soundfile
 transformers
