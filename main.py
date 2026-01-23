@@ -1,14 +1,11 @@
 import gradio as gr
-from audio_utils import transcribe_audio, speak  # J'ai ajouté l'import de speak ici
+from audio_utils import transcribe_audio, speak
 from llm_client import generate_response, summarize_resume
 import globals
 
 ### Function and vars ###
 
 ## Short functions
-
-# Note : J'ai supprimé l'ancienne fonction speak() locale qui utilisait pyttsx3.
-# Maintenant, le script utilise directement celle importée de audio_utils.
 
 def speak_output(textbox):
     text = textbox if isinstance(textbox, str) else textbox.value
@@ -118,4 +115,4 @@ with gr.Blocks() as app:
 
     reset_interview_btn.click(fn=reset_interview, outputs=[assistant_output, reset_interview_btn, job_choice_input, resume_input, nb_question_input, submit_job_btn])
 
-app.launch()
+app.launch(share=True)
