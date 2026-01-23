@@ -99,7 +99,7 @@ with gr.Blocks() as app:
     ).then(
         fn=speak_output,
         inputs=assistant_output,
-        outputs=None
+        outputs=audio_player
     )
 
     user_answer_input.clear(fn=lambda: change_interactivity(False), outputs=submit_answer_btn)
@@ -114,7 +114,7 @@ with gr.Blocks() as app:
     ).then(
         fn=speak_output,
         inputs=assistant_output,
-        outputs=None
+        outputs=audio_player
     )
 
     reset_interview_btn.click(fn=reset_interview, outputs=[assistant_output, reset_interview_btn, job_choice_input, resume_input, nb_question_input, submit_job_btn])
