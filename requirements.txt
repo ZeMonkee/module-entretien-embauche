@@ -6,7 +6,6 @@ pdfplumber
 python-docx
 pyttsx3
 coqui-tts
-simpleaudio
 edge-tts
 pygame
 torch
