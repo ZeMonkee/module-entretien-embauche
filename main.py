@@ -8,10 +8,10 @@ import globals
 ## Short functions
 
 def speak_output(textbox):
-    text = textbox if isinstance(textbox, str) else textbox.value
-    if text:
-        path_to_file = speak(text)
-        return path_to_file
+    text_val = textbox if isinstance(textbox, str) else textbox.value
+    if text_val:
+        mp3_path = speak(text_val)
+        return mp3_path
     return None
 
 def change_interactivity(enable: bool):
@@ -73,6 +73,9 @@ with gr.Blocks() as app:
 
     # During interview elements
     assistant_output =      gr.Textbox(label="Assistant virtuel :", interactive=False, visible=False)
+
+    audio_player =          gr.Audio(label="Voix", interactive=False, autoplay=True, visible=False)
+
     user_answer_input =     gr.Microphone(type="filepath", label="Parlez...", max_length=60, elem_id="audio", visible=False)
     #user_transcription_output = gr.Textbox(label="Transcription", interactive=False, visible=False)
     submit_answer_btn =     gr.Button("Valider la réponse", interactive=False, visible=False)
