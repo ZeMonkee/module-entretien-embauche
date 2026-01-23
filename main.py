@@ -1,30 +1,20 @@
 import gradio as gr
-
-from audio_utils import transcribe_audio
+from audio_utils import transcribe_audio, speak  # J'ai ajouté l'import de speak ici
 from llm_client import generate_response, summarize_resume
 import globals
-
-import pyttsx3
-from TTS.api import TTS
-import simpleaudio as sa
-import numpy as np
-
-tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2")
-
-tts_engine = pyttsx3.init()
 
 ### Function and vars ###
 
 ## Short functions
 
-def speak(text: str):
-    tts_engine.say(text)
-    tts_engine.runAndWait()
+# Note : J'ai supprimé l'ancienne fonction speak() locale qui utilisait pyttsx3.
+# Maintenant, le script utilise directement celle importée de audio_utils.
 
-def speak_output(text: str):
+def speak_output(textbox):
+    text = textbox if isinstance(textbox, str) else textbox.value
     if text:
-        speak(text)
-    return text
+        speak(text) # Appel de la fonction de haute qualité
+    return None
 
 def change_interactivity(enable: bool):
     return gr.update(interactive=enable)
@@ -129,4 +119,3 @@ with gr.Blocks() as app:
     reset_interview_btn.click(fn=reset_interview, outputs=[assistant_output, reset_interview_btn, job_choice_input, resume_input, nb_question_input, submit_job_btn])
 
 app.launch()
-reset_interview()
