@@ -7,3 +7,11 @@ python-docx
 pyttsx3
 coqui-tts
 simpleaudio
+edge-tts
+pygame
+torch
+bark
+numpy
+soundfile
+transformers
+accelerate
