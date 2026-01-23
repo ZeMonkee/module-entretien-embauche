@@ -10,7 +10,8 @@ import globals
 def speak_output(textbox):
     text = textbox if isinstance(textbox, str) else textbox.value
     if text:
-        speak(text) # Appel de la fonction de haute qualité
+        path_to_file = speak(text)
+        return path_to_file
     return None
 
 def change_interactivity(enable: bool):
