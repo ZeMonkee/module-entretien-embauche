@@ -115,4 +115,4 @@ with gr.Blocks() as app:
 
     reset_interview_btn.click(fn=reset_interview, outputs=[assistant_output, reset_interview_btn, job_choice_input, resume_input, nb_question_input, submit_job_btn])
 
-app.launch(share=True)
+app.launch()
