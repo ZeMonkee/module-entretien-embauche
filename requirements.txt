@@ -4,3 +4,8 @@ requests
 ctranslate2
 pdfplumber
 python-docx
+openai
+edge-tts
+sshtunnel
+paramiko<3.0.0
+python-dotenv
