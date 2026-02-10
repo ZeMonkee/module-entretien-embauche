@@ -4,12 +4,9 @@ Interview Simulation Module
 Main entry point for the Gradio application.
 Multi-page wizard with futuristic design.
 """
-import logging
-
 import gradio as gr
 
 from app.config.settings import settings
-from app.state import InterviewState
 from app.ui.theme import custom_theme
 from app.ui.styles import custom_css
 from app.ui.components import (
@@ -17,7 +14,7 @@ from app.ui.components import (
     create_footer,
     create_wizard_header,
     create_particles_html,
-    create_rocket_loader,
+    create_rocket_loader
 )
 from app.ui.handlers import (
     show_loading_and_start,
@@ -31,15 +28,8 @@ from app.ui.handlers import (
     go_to_summary_page,
     go_back_to_job,
     go_back_to_resume,
-    go_back_to_questions,
+    go_back_to_questions
 )
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-)
-logging.getLogger("pdfminer").setLevel(logging.ERROR)
-logger = logging.getLogger(__name__)
 
 
 def create_app() -> gr.Blocks:
@@ -58,7 +48,7 @@ def create_app() -> gr.Blocks:
                 "🚀 Commencer la simulation",
                 variant="primary",
                 elem_classes="launch-btn",
-                size="lg",
+                size="lg"
             )
 
         # === Section 2: Job Selection ===
@@ -77,7 +67,7 @@ def create_app() -> gr.Blocks:
                     "Suivant →",
                     variant="primary",
                     elem_classes="primary-btn",
-                    size="lg",
+                    size="lg"
                 )
 
         # === Section 3: Resume Upload ===
@@ -85,14 +75,9 @@ def create_app() -> gr.Blocks:
             gr.HTML(create_wizard_header(2, "Uploadez votre CV", "📄"))
 
             resume_input = gr.File(
-                label="CV (optionnel) — formats acceptés: .pdf, .docx",
+                label="CV (optionnel) - formats acceptés: .pdf, .docx",
                 file_types=[".docx", ".pdf"],
-                elem_classes="file-upload",
-            )
-            gr.HTML(
-                '<p style="color: #a0a0c0; font-size: 0.9rem; margin-top: 0.5rem;">'
-                "Le CV permet de personnaliser les questions selon votre profil"
-                "</p>"
+                elem_classes="file-upload"
             )
 
             gr.HTML('<p style="color: #a0a0c0; font-size: 0.9rem; margin-top: 0.5rem;">Le CV permet de personnaliser les questions selon votre profil</p>')
@@ -102,13 +87,13 @@ def create_app() -> gr.Blocks:
                     "← Retour",
                     variant="secondary",
                     elem_classes="nav-btn",
-                    size="lg",
+                    size="lg"
                 )
                 resume_next_btn = gr.Button(
                     "Suivant →",
                     variant="primary",
                     elem_classes="primary-btn",
-                    size="lg",
+                    size="lg"
                 )
 
         # === Section 4: Number of Questions ===
@@ -122,7 +107,7 @@ def create_app() -> gr.Blocks:
                     value=settings.DEFAULT_MAX_QUESTIONS,
                     step=1,
                     label="Nombre de questions",
-                    info="Plus de questions = entretien plus approfondi",
+                    info="Plus de questions = entretien plus approfondi"
                 )
 
             with gr.Row():
@@ -130,13 +115,13 @@ def create_app() -> gr.Blocks:
                     "← Retour",
                     variant="secondary",
                     elem_classes="nav-btn",
-                    size="lg",
+                    size="lg"
                 )
                 questions_next_btn = gr.Button(
                     "Suivant →",
                     variant="primary",
                     elem_classes="primary-btn",
-                    size="lg",
+                    size="lg"
                 )
 
         # === Section 5: Summary ===
@@ -152,13 +137,13 @@ def create_app() -> gr.Blocks:
                     "← Modifier",
                     variant="secondary",
                     elem_classes="nav-btn",
-                    size="lg",
+                    size="lg"
                 )
                 start_interview_btn = gr.Button(
                     "🎯 Démarrer l'entretien",
                     variant="primary",
                     elem_classes=["primary-btn", "launch-btn"],
-                    size="lg",
+                    size="lg"
                 )
 
         # === Section 6: Loading Page ===
@@ -176,10 +161,7 @@ def create_app() -> gr.Blocks:
                 interactive=False,
                 lines=4,
                 max_lines=20,
-                elem_classes=["auto-height", "output-box"],
-            )
-            gr.HTML(
-                '<div style="margin: 1.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>'
+                elem_classes=["auto-height", "output-box"]
             )
 
             # Message audio du recruteur
@@ -198,7 +180,7 @@ def create_app() -> gr.Blocks:
                     user_answer_input = gr.Microphone(
                         type="filepath",
                         label="🎤 Répondez oralement",
-                        visible=False,
+                        visible=False
                     )
 
                 with gr.Column(scale=2, elem_classes="modern-input"):
@@ -207,7 +189,7 @@ def create_app() -> gr.Blocks:
                         placeholder="Tapez votre réponse ici...",
                         lines=3,
                         interactive=True,
-                        visible=False,
+                        visible=False
                     )
 
             submit_answer_btn = gr.Button(
@@ -216,7 +198,7 @@ def create_app() -> gr.Blocks:
                 elem_classes=["primary-btn", "secondary-btn"],
                 interactive=False,
                 visible=False,
-                size="lg",
+                size="lg"
             )
 
             reset_interview_btn = gr.Button(
@@ -224,7 +206,7 @@ def create_app() -> gr.Blocks:
                 variant="secondary",
                 elem_classes=["primary-btn", "success-btn"],
                 visible=False,
-                size="lg",
+                size="lg"
             )
 
         # === Footer ===
@@ -238,7 +220,7 @@ def create_app() -> gr.Blocks:
             questions_section,
             summary_section,
             loading_section,
-            interview_section,
+            interview_section
         ]
 
         # === Event Handlers: Navigation ===
@@ -253,7 +235,7 @@ def create_app() -> gr.Blocks:
         job_next_btn.click(
             fn=go_to_resume_page,
             inputs=[job_choice_input],
-            outputs=all_sections,
+            outputs=all_sections
         )
 
         # Resume -> Questions
@@ -272,7 +254,7 @@ def create_app() -> gr.Blocks:
         questions_next_btn.click(
             fn=go_to_summary_page,
             inputs=[job_choice_input, resume_input, nb_question_input],
-            outputs=all_sections + [summary_display],
+            outputs=all_sections + [summary_display]
         )
 
         # Questions <- Resume
@@ -314,29 +296,19 @@ def create_app() -> gr.Blocks:
         # Microphone events
         user_answer_input.clear(
             fn=lambda: change_interactivity(False),
-            outputs=submit_answer_btn,
+            outputs=submit_answer_btn
         )
         user_answer_input.stop_recording(
             fn=lambda: change_interactivity(True),
-            outputs=submit_answer_btn,
+            outputs=submit_answer_btn
         )
         user_text_input.change(
             fn=enable_submit,
             inputs=user_text_input,
-            outputs=submit_answer_btn,
+            outputs=submit_answer_btn
         )
 
         # Submit answer
-        pipeline_outputs = [
-            assistant_output,
-            user_answer_input,
-            submit_answer_btn,
-            reset_interview_btn,
-            user_text_input,
-            progress_indicator,
-            session_state,
-        ]
-
         submit_answer_btn.click(
             fn=pipeline,
             inputs=[user_answer_input, user_text_input],
@@ -375,61 +347,6 @@ def create_app() -> gr.Blocks:
     return app
 
 
-def _patch_uvicorn_content_length():
-    """Monkey-patch uvicorn to suppress Content-Length mismatch errors.
-
-    Gradio has a known bug where the Content-Length header doesn't match
-    the actual response body for certain responses (file serving, streaming).
-    The error is raised in RequestResponseCycle.send() in both h11 and
-    httptools implementations. This patch catches and silently ignores
-    ONLY this specific error.
-    """
-    # Patch h11 implementation
-    try:
-        from uvicorn.protocols.http.h11_impl import (
-            RequestResponseCycle as H11Cycle,
-        )
-
-        _original_h11_send = H11Cycle.send
-
-        async def _patched_h11_send(self, message):
-            try:
-                await _original_h11_send(self, message)
-            except Exception as exc:
-                if "Content-Length" in str(exc):
-                    # Force completion to avoid "ASGI callable returned without completing response"
-                    self.response_complete = True
-                    return
-                raise
-
-        H11Cycle.send = _patched_h11_send
-    except ImportError:
-        pass
-
-    # Patch httptools implementation
-    try:
-        from uvicorn.protocols.http.httptools_impl import (
-            RequestResponseCycle as HttpToolsCycle,
-        )
-
-        _original_httptools_send = HttpToolsCycle.send
-
-        async def _patched_httptools_send(self, message):
-            try:
-                await _original_httptools_send(self, message)
-            except RuntimeError as exc:
-                if "Content-Length" in str(exc):
-                    # Force completion to avoid "ASGI callable returned without completing response"
-                    self.response_complete = True
-                    return
-                raise
-
-        HttpToolsCycle.send = _patched_httptools_send
-    except ImportError:
-        pass
-
-
 if __name__ == "__main__":
-    _patch_uvicorn_content_length()
     app = create_app()
     app.launch(allowed_paths=["app/static/audio"])

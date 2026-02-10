@@ -2,7 +2,6 @@
 Application Settings and Configuration
 
 Centralizes all configuration parameters for the interview module.
-Uses environment variables with sensible defaults.
 """
 import os
 from pathlib import Path
@@ -11,6 +10,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+# Base paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 PROMPTS_DIR = BASE_DIR / "prompts"
 
@@ -34,11 +34,12 @@ class Settings:
     DEFAULT_JOB_CHOICE: str = "non défini"
 
     # Audio configuration
-    WHISPER_MODEL: str = os.getenv("WHISPER_MODEL", "tiny")
+    WHISPER_MODEL: str = "tiny"
     WHISPER_COMPUTE_TYPE: str = "int8_float32"
     WHISPER_DEVICE: str = "cpu"
-    WHISPER_CPU_THREADS: int = int(os.getenv("WHISPER_THREADS", "8"))
+    WHISPER_CPU_THREADS: int = 8
     AUDIO_LANGUAGE: str = "fr"
+    MAX_AUDIO_LENGTH: int = 60
 
     # TTS Configuration (EDGE-TTS)
     TTS_ENABLED: bool = True
@@ -58,4 +59,5 @@ class Settings:
 
 
 
+# Global settings instance
 settings = Settings()

@@ -1,114 +1,95 @@
-# Simulateur d'Entretien d'Embauche — PoC
+# PoC - Interview module:
 
-Module de simulation d'entretien d'embauche en français, propulsé par un LLM local (Ollama).
-L'application propose un wizard interactif permettant de configurer l'entretien, de répondre aux questions par écrit ou oralement, et de recevoir un feedback détaillé.
+This module is a PoC for a French job interview.
 
-
-## Architecture
-
-```
-module-entretien-embauche/
-├── main.py                    # Point d'entrée — crée l'app Gradio
-├── requirements.txt
-├── prompts/                   # Templates de prompts pour le LLM
-│   ├── interview_prompt.txt   # Prompt du recruteur (questions)
-│   ├── results_prompt.txt     # Prompt d'évaluation finale
-│   └── summarize_resume_prompt.txt  # Résumé de CV
-└── app/
-    ├── config/
-    │   └── settings.py        # Configuration centralisée
-    ├── services/
-    │   ├── llm_service.py     # Interaction avec Ollama
-    │   ├── audio_service.py   # Transcription audio (Whisper)
-    │   └── document_service.py # Extraction de texte (PDF/DOCX)
-    ├── state/
-    │   └── interview_state.py # État de session (per-user via gr.State)
-    └── ui/
-        ├── theme.py           # Thème Gradio personnalisé
-        ├── styles.py          # CSS custom
-        ├── components.py      # Composants HTML réutilisables
-        └── handlers.py        # Logique des événements UI
-```
+It is mainly supposed to work locally, but can be temporarily deployed online thanks to Gradio.
 
 
-## Prérequis
+## Requirements
 
-- **Python** 3.10+
-- **Ollama** 0.5+
+To run the project, you'll need the following tools:
+- Python 3.10 +
+- Ollama 0.9.5+
 
 
 ## Installation
 
-### 1. Environnement virtuel (recommandé)
+First, we advise you to create a venv (virtual environment) in order to avoid version issues 
+in either this or your other projects.
 
-```shell
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-```
 
-### 2. Ollama
+### Ollama
 
-Installez et lancez le modèle :
+First, you need to set up the generative IA:
 
 ```shell
 ollama pull llama3.1:8b
 ```
 
-Si vous n'utilisez pas l'application desktop Ollama, démarrez le serveur manuellement :
+If you **don't** use Ollama desktop app, you also need to manually start the server with:
 
 ```shell
-ollama serve
+ollama serv
 ```
 
-> Le modèle peut être changé via la variable d'environnement `OLLAMA_MODEL`
-> ou dans `app/config/settings.py`.
+NB: mistral could be replaced by the generative IA of your choice, mostly depending on your available
+compute resources. 
 
-### 3. Dépendances Python
+For any model change, you need to pull it and change the value of **generative_ai_model** in **globals.py**
+
+
+### Requirements
+
+First, [install pip](https://pip.pypa.io/en/stable/installation/) by following the link. Follow the instructions
+depending on your OS.
+
+Then you'll have to pull the requirements through python's package installer **pip** 
+from the root directory of your project:
 
 ```shell
 pip install -r requirements.txt
 ```
 
 
-## Lancement
+## Run the project
+
+Once everything is correctly installed and Ollama server is up,
+you can directly run the **"main.py"** file.
 
 ```shell
 python main.py
 ```
 
-L'application sera accessible sur `http://localhost:7860`.
+
+### Customisation
+
+You can customize interview parameters in the first part of the **"globals.py"** file. They are ordered by name.
+
+NB: The second part is dynamically changed during use, so changing it will mostly have no effect.
 
 
-### Variables d'environnement optionnelles
+## Issues
 
-| Variable          | Défaut                                  | Description                    |
-|-------------------|-----------------------------------------|--------------------------------|
-| `OLLAMA_MODEL`    | `llama3.1:8b`                           | Modèle LLM à utiliser         |
-| `OLLAMA_URL`      | `http://localhost:11434/api/generate`   | URL de l'API Ollama            |
-| `LLM_TIMEOUT`     | `120`                                   | Timeout des requêtes LLM (s)  |
-| `WHISPER_MODEL`   | `tiny`                                  | Modèle Whisper pour l'audio   |
-| `WHISPER_THREADS` | `8`                                     | Threads CPU pour Whisper      |
+#### - I want my module to run on a public link
 
-
-### Partager sur un lien public
-
-```python
-# Dans main.py, remplacez :
+In **main.py**, change
+```
 app.launch()
-# Par :
+```
+by
+```
 app.launch(share=True)
 ```
 
+#### - The transcription of answers is laggy or takes too long.
 
-### Transcription audio trop lente
-
-Changez le modèle Whisper dans `settings.py` ou via la variable `WHISPER_MODEL`.
-Modèles disponibles (du plus rapide au plus précis) : `tiny`, `base`, `small`, `medium`, `large`.
+You can edit the model used in **audio_utils.py** by editing the following line:
+```
+model = WhisperModel("medium", compute_type="int8", device="cpu")
+```
 
 
 ## Licence
 
-Ce projet est la propriété de **Formasup Odyssée**. Tous droits réservés.
+This project is owned by **Formasup Odyssée**. 
+All rights reserved.
