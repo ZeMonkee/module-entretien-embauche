@@ -310,6 +310,62 @@ def create_app() -> gr.Blocks:
     return app
 
 
+def _patch_uvicorn_content_length():
+    """Monkey-patch uvicorn to suppress Content-Length mismatch errors.
+
+    Gradio has a known bug where the Content-Length header doesn't match
+    the actual response body for certain responses (file serving, streaming).
+    The error is raised in RequestResponseCycle.send() in both h11 and
+    httptools implementations. This patch catches and silently ignores
+    ONLY this specific error.
+    """
+    # Patch h11 implementation
+    try:
+        from uvicorn.protocols.http.h11_impl import (
+            RequestResponseCycle as H11Cycle,
+        )
+
+        _original_h11_send = H11Cycle.send
+
+        async def _patched_h11_send(self, message):
+            try:
+                await _original_h11_send(self, message)
+            except Exception as exc:
+                if "Content-Length" in str(exc):
+                    # Force completion to avoid "ASGI callable returned without completing response"
+                    self.response_complete = True
+                    return
+                raise
+
+        H11Cycle.send = _patched_h11_send
+    except ImportError:
+        pass
+
+    # Patch httptools implementation
+    try:
+        from uvicorn.protocols.http.httptools_impl import (
+            RequestResponseCycle as HttpToolsCycle,
+        )
+
+        _original_httptools_send = HttpToolsCycle.send
+
+        async def _patched_httptools_send(self, message):
+            try:
+                await _original_httptools_send(self, message)
+            except RuntimeError as exc:
+                if "Content-Length" in str(exc):
+                    # Force completion to avoid "ASGI callable returned without completing response"
+                    self.response_complete = True
+                    return
+                raise
+
+        HttpToolsCycle.send = _patched_httptools_send
+    except ImportError:
+        pass
+
+
 if __name__ == "__main__":
+    _patch_uvicorn_content_length()
     app = create_app()
     app.launch()
+
