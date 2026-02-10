@@ -13,10 +13,11 @@ from app.ui.components import (
     create_landing_page,
     create_footer,
     create_wizard_header,
-    create_particles_html
+    create_particles_html,
+    create_rocket_loader
 )
 from app.ui.handlers import (
-    start_interview,
+    show_loading_and_start,
     pipeline,
     reset_interview,
     enable_submit,
@@ -145,7 +146,11 @@ def create_app() -> gr.Blocks:
                     size="lg"
                 )
         
-        # === Section 6: Interview Chat ===
+        # === Section 6: Loading Page ===
+        with gr.Column(visible=False, elem_classes="wizard-card") as loading_section:
+            gr.HTML(create_rocket_loader())
+        
+        # === Section 7: Interview Chat ===
         with gr.Column(visible=False, elem_classes="interview-card") as interview_section:
             gr.HTML('<div class="card-title"><span class="card-icon">💬</span>Entretien en cours</div>')
             
@@ -205,6 +210,7 @@ def create_app() -> gr.Blocks:
             resume_section,
             questions_section,
             summary_section,
+            loading_section,
             interview_section
         ]
         
@@ -256,9 +262,9 @@ def create_app() -> gr.Blocks:
         
         # === Event Handlers: Interview ===
         
-        # Start interview from summary
+        # Start interview from summary - show loading first
         start_interview_btn.click(
-            fn=start_interview,
+            fn=show_loading_and_start,
             inputs=[job_choice_input, resume_input, nb_question_input],
             outputs=[
                 landing_section,
@@ -266,6 +272,7 @@ def create_app() -> gr.Blocks:
                 resume_section,
                 questions_section,
                 summary_section,
+                loading_section,
                 interview_section,
                 progress_indicator,
                 assistant_output,
@@ -314,6 +321,7 @@ def create_app() -> gr.Blocks:
                 resume_section,
                 questions_section,
                 summary_section,
+                loading_section,
                 interview_section,
                 progress_indicator,
                 assistant_output,

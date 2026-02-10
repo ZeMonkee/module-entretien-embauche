@@ -40,6 +40,7 @@ def go_to_job_page():
         gr.update(visible=False),  # resume_section
         gr.update(visible=False),  # questions_section
         gr.update(visible=False),  # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=False),  # interview_section
     ]
 
@@ -54,6 +55,7 @@ def go_to_resume_page(job: str):
             gr.update(),  # resume_section
             gr.update(),  # questions_section
             gr.update(),  # summary_section
+            gr.update(),  # loading_section
             gr.update(),  # interview_section
         ]
     return [
@@ -62,6 +64,7 @@ def go_to_resume_page(job: str):
         gr.update(visible=True),   # resume_section
         gr.update(visible=False),  # questions_section
         gr.update(visible=False),  # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=False),  # interview_section
     ]
 
@@ -74,6 +77,7 @@ def go_to_questions_page():
         gr.update(visible=False),  # resume_section
         gr.update(visible=True),   # questions_section
         gr.update(visible=False),  # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=False),  # interview_section
     ]
 
@@ -89,6 +93,7 @@ def go_to_summary_page(job: str, resume_file, nb_questions: int):
         gr.update(visible=False),  # resume_section
         gr.update(visible=False),  # questions_section
         gr.update(visible=True),   # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=False),  # interview_section
         gr.update(value=summary_html),  # summary_display
     ]
@@ -102,6 +107,7 @@ def go_back_to_job():
         gr.update(visible=False),  # resume_section
         gr.update(visible=False),  # questions_section
         gr.update(visible=False),  # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=False),  # interview_section
     ]
 
@@ -114,6 +120,7 @@ def go_back_to_resume():
         gr.update(visible=True),   # resume_section
         gr.update(visible=False),  # questions_section
         gr.update(visible=False),  # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=False),  # interview_section
     ]
 
@@ -126,6 +133,7 @@ def go_back_to_questions():
         gr.update(visible=False),  # resume_section
         gr.update(visible=True),   # questions_section
         gr.update(visible=False),  # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=False),  # interview_section
     ]
 
@@ -143,20 +151,38 @@ def show_loading_page():
     ]
 
 
-# === Interview Handlers ===
-
-def start_interview(job_chosen: str, resume_file, nb_questions: int):
+def show_loading_and_start(job_chosen: str, resume_file, nb_questions: int):
     """
-    Start a new interview session.
+    Show loading animation and start interview.
+    Uses Gradio generator to show loading first, then start interview.
     
     Args:
         job_chosen: The job position selected
         resume_file: Optional uploaded resume file
         nb_questions: Number of questions for the interview
         
-    Returns:
+    Yields:
         Tuple of Gradio updates for UI components
     """
+    import time
+    
+    # First yield: show loading page
+    yield [
+        gr.update(visible=False),  # landing_section
+        gr.update(visible=False),  # job_section
+        gr.update(visible=False),  # resume_section
+        gr.update(visible=False),  # questions_section
+        gr.update(visible=False),  # summary_section
+        gr.update(visible=True),   # loading_section
+        gr.update(visible=False),  # interview_section
+        gr.update(),               # progress_indicator
+        gr.update(),               # assistant_output
+        gr.update(),               # user_answer_input
+        gr.update(),               # submit_answer_btn
+        gr.update(),               # user_text_input
+        gr.update(),               # reset_interview_btn
+    ]
+    
     # Update state
     interview_state.job_choice = job_chosen
     interview_state.max_question_amount = int(nb_questions)
@@ -178,12 +204,17 @@ def start_interview(job_chosen: str, resume_file, nb_questions: int):
     
     progress_html = create_progress_html()
     
-    return [
+    # Minimum loading time for animation effect
+    time.sleep(2)
+    
+    # Second yield: show interview page
+    yield [
         gr.update(visible=False),  # landing_section
         gr.update(visible=False),  # job_section
         gr.update(visible=False),  # resume_section
         gr.update(visible=False),  # questions_section
         gr.update(visible=False),  # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=True),   # interview_section
         gr.update(value=progress_html),  # progress_indicator
         gr.update(value=first_question),  # assistant_output
@@ -271,6 +302,7 @@ def reset_interview():
         gr.update(visible=False),  # resume_section
         gr.update(visible=False),  # questions_section
         gr.update(visible=False),  # summary_section
+        gr.update(visible=False),  # loading_section
         gr.update(visible=False),  # interview_section
         gr.update(value=""),       # progress_indicator
         gr.update(value=""),       # assistant_output
