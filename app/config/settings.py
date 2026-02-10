@@ -13,8 +13,10 @@ PROMPTS_DIR = BASE_DIR / "prompts"
 class Settings:
     """Application configuration settings."""
     
-    # LLM Configuration
-    GENERATIVE_AI_MODEL: str = "llama3.1:8b"
+    # Configuration Ollama
+    # Pour serveur distant via tunnel SSH : 'ssh -L 11434:localhost:11434 p2300557@iutbg-skynet.iutbourg.univ-lyon1.fr'
+    # Puis utilisez "http://localhost:11434" pour accéder au serveur distant
+    GENERATIVE_AI_MODEL: str = "llama3.3:latest"  # Modèle Llama 3.3
     GENERATIVE_AI_URL: str = "http://localhost:11434/api/generate"
     
     # Prompt file paths
