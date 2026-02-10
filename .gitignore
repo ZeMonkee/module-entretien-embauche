@@ -87,3 +87,8 @@ dmypy.json
 
 # Windows
 Thumbs.db
+
+# Generated Content
+app/static/audio/
+*.mp3
+*.wav

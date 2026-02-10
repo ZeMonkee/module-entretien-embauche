@@ -10,9 +10,10 @@ from app.config.settings import settings
 from app.state import interview_state
 from app.services.llm_service import llm_service
 from app.services.audio_service import audio_service
+from app.services.tts_service import tts_service
 from app.services.document_service import document_service
 from app.ui.components import (
-    create_progress_html, 
+    create_progress_html,
     create_completed_progress_html,
     create_step_header,
     create_summary_card,
@@ -86,7 +87,7 @@ def go_to_summary_page(job: str, resume_file, nb_questions: int):
     """Navigate to summary page with entered data."""
     has_resume = resume_file is not None
     summary_html = create_summary_card(job, has_resume, int(nb_questions))
-    
+
     return [
         gr.update(visible=False),  # landing_section
         gr.update(visible=False),  # job_section
@@ -155,17 +156,17 @@ def show_loading_and_start(job_chosen: str, resume_file, nb_questions: int):
     """
     Show loading animation and start interview.
     Uses Gradio generator to show loading first, then start interview.
-    
+
     Args:
         job_chosen: The job position selected
         resume_file: Optional uploaded resume file
         nb_questions: Number of questions for the interview
-        
+
     Yields:
         Tuple of Gradio updates for UI components
     """
     import time
-    
+
     # First yield: show loading page
     yield [
         gr.update(visible=False),  # landing_section
@@ -181,17 +182,18 @@ def show_loading_and_start(job_chosen: str, resume_file, nb_questions: int):
         gr.update(),               # submit_answer_btn
         gr.update(),               # user_text_input
         gr.update(),               # reset_interview_btn
+        gr.update(),               # assistant_audio
     ]
-    
+
     # Update state
     interview_state.job_choice = job_chosen
     interview_state.max_question_amount = int(nb_questions)
     interview_state.question_count = 1
-    
+
     # Process resume if provided
     if resume_file is not None:
         interview_state.resume_summary = document_service.summarize_resume(resume_file)
-    
+
     # Generate first question
     first_question = llm_service.generate_response(
         settings.INTERVIEW_PROMPT_PATH,
@@ -201,12 +203,16 @@ def show_loading_and_start(job_chosen: str, resume_file, nb_questions: int):
         chat_history=interview_state.chat_history
     )
     interview_state.add_message("assistant", first_question)
-    
+
+    # Generate Audio
+    audio_path = tts_service.generate_audio(first_question)
+    audio_update = gr.update(value=audio_path, visible=True, autoplay=True) if audio_path else gr.update(visible=False)
+
     progress_html = create_progress_html()
-    
+
     # Minimum loading time for animation effect
     time.sleep(2)
-    
+
     # Second yield: show interview page
     yield [
         gr.update(visible=False),  # landing_section
@@ -218,6 +224,7 @@ def show_loading_and_start(job_chosen: str, resume_file, nb_questions: int):
         gr.update(visible=True),   # interview_section
         gr.update(value=progress_html),  # progress_indicator
         gr.update(value=first_question),  # assistant_output
+        audio_update,                     # assistant_audio
         gr.update(visible=True),   # user_answer_input
         gr.update(visible=True, interactive=False),  # submit_answer_btn
         gr.update(visible=True),   # user_text_input
@@ -228,11 +235,11 @@ def show_loading_and_start(job_chosen: str, resume_file, nb_questions: int):
 def pipeline(audio_path=None, text_input=None):
     """
     Process user input and generate next question or results.
-    
+
     Args:
         audio_path: Optional path to recorded audio
         text_input: Optional text input
-        
+
     Returns:
         Tuple of Gradio updates for UI components
     """
@@ -241,9 +248,9 @@ def pipeline(audio_path=None, text_input=None):
         transcript = audio_service.transcribe(audio_path)
     else:
         transcript = text_input or ""
-    
+
     interview_state.add_message("user", transcript)
-    
+
     if not interview_state.is_interview_complete:
         # Generate next question
         response = llm_service.generate_response(
@@ -255,16 +262,21 @@ def pipeline(audio_path=None, text_input=None):
         )
         interview_state.add_message("assistant", response)
         interview_state.increment_question()
-        
+
+        # Generate Audio
+        audio_file = tts_service.generate_audio(response)
+        audio_update = gr.update(value=audio_file, visible=True, autoplay=True) if audio_file else gr.update(visible=False)
+
         progress_html = create_progress_html()
-        
+
         return (
             response,
             gr.update(value=None),
             gr.update(interactive=False),
             gr.update(visible=False),
             gr.update(value=None),
-            gr.update(value=progress_html)
+            gr.update(value=progress_html),
+            audio_update # assistant_audio
         )
     else:
         # Interview complete - generate results
@@ -276,26 +288,32 @@ def pipeline(audio_path=None, text_input=None):
             chat_history=interview_state.chat_history
         )
         interview_state.reset()
-        
+
+        # Audio for results (optional, maybe too long?)
+        # User asked for "synthèse vocale", implying the interviewer speaks.
+        # Results are usually written feedback. I'll omit audio for results to keep it natural, or include it if short.
+        # But usually results are long. I'll skip audio for the final feedback for now.
+
         return (
             response,
             gr.update(value=None, visible=False),
             gr.update(visible=False),
             gr.update(visible=True),
             gr.update(value=None, visible=False),
-            gr.update(value=create_completed_progress_html())
+            gr.update(value=create_completed_progress_html()),
+            gr.update(visible=False) # assistant_audio
         )
 
 
 def reset_interview():
     """
     Reset the interview to start a new session.
-    
+
     Returns:
         Tuple of Gradio updates for UI components
     """
     interview_state.reset()
-    
+
     return [
         gr.update(visible=True),   # landing_section
         gr.update(visible=False),  # job_section
@@ -306,6 +324,7 @@ def reset_interview():
         gr.update(visible=False),  # interview_section
         gr.update(value=""),       # progress_indicator
         gr.update(value=""),       # assistant_output
+        gr.update(visible=False),  # assistant_audio
         gr.update(visible=False),  # user_answer_input
         gr.update(visible=False),  # submit_answer_btn
         gr.update(visible=False),  # user_text_input

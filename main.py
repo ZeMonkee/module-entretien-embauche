@@ -34,34 +34,34 @@ from app.ui.handlers import (
 
 def create_app() -> gr.Blocks:
     """Create and configure the Gradio application with multi-page wizard."""
-    
-    with gr.Blocks(title="Simulateur d'Entretien") as app:
-        
+
+    with gr.Blocks(title="Simulateur d'Entretien", theme=custom_theme, css=custom_css) as app:
+
         # === Particles Background ===
         gr.HTML(create_particles_html())
-        
+
         # === Section 1: Landing Page ===
         with gr.Column(visible=True, elem_classes="landing-section") as landing_section:
             gr.HTML(create_landing_page())
-            
+
             launch_btn = gr.Button(
                 "🚀 Commencer la simulation",
                 variant="primary",
                 elem_classes="launch-btn",
                 size="lg"
             )
-        
+
         # === Section 2: Job Selection ===
         with gr.Column(visible=False, elem_classes="wizard-card") as job_section:
             gr.HTML(create_wizard_header(1, "Quel poste visez-vous ?", "💼"))
-            
+
             with gr.Column(elem_classes="modern-input"):
                 job_choice_input = gr.Textbox(
                     label="Intitulé du poste",
                     placeholder="Ex: Développeur Full Stack, Chef de Projet, Data Analyst...",
                     interactive=True,
                 )
-            
+
             with gr.Row():
                 job_next_btn = gr.Button(
                     "Suivant →",
@@ -69,19 +69,19 @@ def create_app() -> gr.Blocks:
                     elem_classes="primary-btn",
                     size="lg"
                 )
-        
+
         # === Section 3: Resume Upload ===
         with gr.Column(visible=False, elem_classes="wizard-card") as resume_section:
             gr.HTML(create_wizard_header(2, "Uploadez votre CV", "📄"))
-            
+
             resume_input = gr.File(
                 label="CV (optionnel) - formats acceptés: .pdf, .docx",
                 file_types=[".docx", ".pdf"],
                 elem_classes="file-upload"
             )
-            
+
             gr.HTML('<p style="color: #a0a0c0; font-size: 0.9rem; margin-top: 0.5rem;">Le CV permet de personnaliser les questions selon votre profil</p>')
-            
+
             with gr.Row():
                 resume_back_btn = gr.Button(
                     "← Retour",
@@ -95,11 +95,11 @@ def create_app() -> gr.Blocks:
                     elem_classes="primary-btn",
                     size="lg"
                 )
-        
+
         # === Section 4: Number of Questions ===
         with gr.Column(visible=False, elem_classes="wizard-card") as questions_section:
             gr.HTML(create_wizard_header(3, "Durée de l'entretien", "🔢"))
-            
+
             with gr.Column(elem_classes="modern-slider"):
                 nb_question_input = gr.Slider(
                     minimum=1,
@@ -109,7 +109,7 @@ def create_app() -> gr.Blocks:
                     label="Nombre de questions",
                     info="Plus de questions = entretien plus approfondi"
                 )
-            
+
             with gr.Row():
                 questions_back_btn = gr.Button(
                     "← Retour",
@@ -123,15 +123,15 @@ def create_app() -> gr.Blocks:
                     elem_classes="primary-btn",
                     size="lg"
                 )
-        
+
         # === Section 5: Summary ===
         with gr.Column(visible=False, elem_classes="wizard-card") as summary_section:
             gr.HTML(create_wizard_header(4, "Récapitulatif", "📋"))
-            
+
             summary_display = gr.HTML(value="")
-            
+
             gr.HTML('<p style="color: #c8c8e8; text-align: center; margin: 1rem 0;">Vérifiez vos informations avant de démarrer</p>')
-            
+
             with gr.Row():
                 summary_back_btn = gr.Button(
                     "← Modifier",
@@ -145,17 +145,17 @@ def create_app() -> gr.Blocks:
                     elem_classes=["primary-btn", "launch-btn"],
                     size="lg"
                 )
-        
+
         # === Section 6: Loading Page ===
         with gr.Column(visible=False, elem_classes="wizard-card") as loading_section:
             gr.HTML(create_rocket_loader())
-        
+
         # === Section 7: Interview Chat ===
         with gr.Column(visible=False, elem_classes="interview-card") as interview_section:
             gr.HTML('<div class="card-title"><span class="card-icon">💬</span>Entretien en cours</div>')
-            
+
             progress_indicator = gr.HTML(value="")
-            
+
             assistant_output = gr.Textbox(
                 label="Recruteur",
                 interactive=False,
@@ -163,9 +163,18 @@ def create_app() -> gr.Blocks:
                 max_lines=20,
                 elem_classes=["auto-height", "output-box"]
             )
-            
+
+            # Message audio du recruteur
+            assistant_audio = gr.Audio(
+                label="Voix du recruteur",
+                interactive=False,
+                autoplay=True,
+                visible=False, # Visible seulement quand il y a du son
+                elem_classes="audio-player"
+            )
+
             gr.HTML('<div style="margin: 1.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>')
-            
+
             with gr.Row():
                 with gr.Column(scale=1, elem_classes="mic-container"):
                     user_answer_input = gr.Microphone(
@@ -173,7 +182,7 @@ def create_app() -> gr.Blocks:
                         label="🎤 Répondez oralement",
                         visible=False
                     )
-                
+
                 with gr.Column(scale=2, elem_classes="modern-input"):
                     user_text_input = gr.Textbox(
                         label="✍️ Ou écrivez votre réponse",
@@ -182,7 +191,7 @@ def create_app() -> gr.Blocks:
                         interactive=True,
                         visible=False
                     )
-            
+
             submit_answer_btn = gr.Button(
                 "Valider ma réponse",
                 variant="primary",
@@ -191,7 +200,7 @@ def create_app() -> gr.Blocks:
                 visible=False,
                 size="lg"
             )
-            
+
             reset_interview_btn = gr.Button(
                 "🔄 Recommencer un nouvel entretien",
                 variant="secondary",
@@ -199,10 +208,10 @@ def create_app() -> gr.Blocks:
                 visible=False,
                 size="lg"
             )
-        
+
         # === Footer ===
         gr.HTML(create_footer())
-        
+
         # === All sections list for navigation ===
         all_sections = [
             landing_section,
@@ -213,55 +222,55 @@ def create_app() -> gr.Blocks:
             loading_section,
             interview_section
         ]
-        
+
         # === Event Handlers: Navigation ===
-        
+
         # Landing -> Job
         launch_btn.click(
             fn=go_to_job_page,
             outputs=all_sections
         )
-        
+
         # Job -> Resume
         job_next_btn.click(
             fn=go_to_resume_page,
             inputs=[job_choice_input],
             outputs=all_sections
         )
-        
+
         # Resume -> Questions
         resume_next_btn.click(
             fn=go_to_questions_page,
             outputs=all_sections
         )
-        
+
         # Resume <- Job
         resume_back_btn.click(
             fn=go_back_to_job,
             outputs=all_sections
         )
-        
+
         # Questions -> Summary
         questions_next_btn.click(
             fn=go_to_summary_page,
             inputs=[job_choice_input, resume_input, nb_question_input],
             outputs=all_sections + [summary_display]
         )
-        
+
         # Questions <- Resume
         questions_back_btn.click(
             fn=go_back_to_resume,
             outputs=all_sections
         )
-        
+
         # Summary <- Questions
         summary_back_btn.click(
             fn=go_back_to_questions,
             outputs=all_sections
         )
-        
+
         # === Event Handlers: Interview ===
-        
+
         # Start interview from summary - show loading first
         start_interview_btn.click(
             fn=show_loading_and_start,
@@ -276,13 +285,14 @@ def create_app() -> gr.Blocks:
                 interview_section,
                 progress_indicator,
                 assistant_output,
+                assistant_audio,
                 user_answer_input,
                 submit_answer_btn,
                 user_text_input,
                 reset_interview_btn
             ]
         )
-        
+
         # Microphone events
         user_answer_input.clear(
             fn=lambda: change_interactivity(False),
@@ -297,7 +307,7 @@ def create_app() -> gr.Blocks:
             inputs=user_text_input,
             outputs=submit_answer_btn
         )
-        
+
         # Submit answer
         submit_answer_btn.click(
             fn=pipeline,
@@ -308,10 +318,11 @@ def create_app() -> gr.Blocks:
                 submit_answer_btn,
                 reset_interview_btn,
                 user_text_input,
-                progress_indicator
+                progress_indicator,
+                assistant_audio
             ]
         )
-        
+
         # Reset interview
         reset_interview_btn.click(
             fn=reset_interview,
@@ -325,16 +336,17 @@ def create_app() -> gr.Blocks:
                 interview_section,
                 progress_indicator,
                 assistant_output,
+                assistant_audio,
                 user_answer_input,
                 submit_answer_btn,
                 user_text_input,
                 reset_interview_btn
             ]
         )
-    
+
     return app
 
 
 if __name__ == "__main__":
     app = create_app()
-    app.launch(theme=custom_theme, css=custom_css)
+    app.launch(allowed_paths=["app/static/audio"])
