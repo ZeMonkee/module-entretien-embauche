@@ -172,26 +172,21 @@ def create_app() -> gr.Blocks:
                 visible=False, # Visible seulement quand il y a du son
                 elem_classes="audio-player"
             )
+            with gr.Column(elem_classes="mic-container"):
+                user_answer_input = gr.Microphone(
+                    type="filepath",
+                    label="🎤 Répondez oralement",
+                    visible=False,
+                )
 
-            gr.HTML('<div style="margin: 1.5rem 0; border-top: 1px solid rgba(255,255,255,0.1);"></div>')
-
-            with gr.Row():
-                with gr.Column(scale=1, elem_classes="mic-container"):
-                    user_answer_input = gr.Microphone(
-                        type="filepath",
-                        label="🎤 Répondez oralement",
-                        visible=False
-                    )
-
-                with gr.Column(scale=2, elem_classes="modern-input"):
-                    user_text_input = gr.Textbox(
-                        label="✍️ Ou écrivez votre réponse",
-                        placeholder="Tapez votre réponse ici...",
-                        lines=3,
-                        interactive=True,
-                        visible=False
-                    )
-
+            with gr.Column(elem_classes="modern-input"):
+                user_text_input = gr.Textbox(
+                    label="✍️ Ou écrivez votre réponse",
+                    placeholder="Tapez votre réponse ici...",
+                    lines=3,
+                    interactive=True,
+                    visible=False,
+                )
             submit_answer_btn = gr.Button(
                 "Valider ma réponse",
                 variant="primary",
