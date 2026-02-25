@@ -41,19 +41,20 @@ class Settings:
     AUDIO_LANGUAGE: str = "fr"
     MAX_AUDIO_LENGTH: int = 60
 
-    # TTS Configuration (EDGE-TTS)
+    # TTS Configuration (Edge-TTS Natural + Local Fallback)
     TTS_ENABLED: bool = True
-    # Voix Microsoft Edge (Ex: 'fr-FR-HenriNeural', 'fr-FR-DeniseNeural')
+    # Voix recommandée: 'fr-FR-HenriNeural' ou 'fr-FR-DeniseNeural' pour une voix naturelle (nécessite Internet)
+    # Si Internet indisponible, pyttsx3 (robotic) sera utilisé.
     TTS_VOICE_ID: str = "fr-FR-HenriNeural"
 
-    # SSH Tunneling (LLM Only now)
+    # SSH Tunneling (LLM Only)
     SSH_ENABLED: bool = True
     SSH_HOST: str = os.getenv("SSH_HOST", "iutbg-skynet.iutbourg.univ-lyon1.fr")
     SSH_USERNAME: str = os.getenv("SSH_USERNAME", "p2300557")
     SSH_PASSWORD: str = os.getenv("SSH_PASSWORD", "")
     SSH_KEY_PATH: str = os.getenv("SSH_KEY_PATH", "")
 
-    # -- LLM Configuration (Conserved for Ollama interaction if needed) --
+    # -- LLM Configuration (Conserved for Ollama interaction) --
     SSH_LLM_REMOTE_BIND_PORT: int = 11434
     SSH_LLM_LOCAL_BIND_PORT: int = 11434
 

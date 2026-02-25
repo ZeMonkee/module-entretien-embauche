@@ -7,7 +7,7 @@ Includes navigation functions for the wizard and interview logic.
 import gradio as gr
 
 from app.config.settings import settings
-from app.state import interview_state
+from app.state.interview_state import interview_state
 from app.services.llm_service import llm_service
 from app.services.audio_service import audio_service
 from app.services.tts_service import tts_service

@@ -6,6 +6,8 @@ pdfplumber
 python-docx
 openai
 edge-tts
+pyttsx3
+pypiwin32
 sshtunnel
 paramiko<3.0.0
 python-dotenv
