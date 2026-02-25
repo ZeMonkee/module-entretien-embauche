@@ -178,11 +178,11 @@ def show_loading_and_start(job_chosen: str, resume_file, nb_questions: int):
         gr.update(visible=False),  # interview_section
         gr.update(),               # progress_indicator
         gr.update(),               # assistant_output
+        gr.update(),               # assistant_audio
         gr.update(),               # user_answer_input
         gr.update(),               # submit_answer_btn
         gr.update(),               # user_text_input
         gr.update(),               # reset_interview_btn
-        gr.update(),               # assistant_audio
     ]
 
     # Update state
