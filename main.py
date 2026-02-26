@@ -14,7 +14,8 @@ from app.ui.components import (
     create_footer,
     create_wizard_header,
     create_particles_html,
-    create_rocket_loader
+    create_rocket_loader,
+    create_youtube_player_html
 )
 from app.ui.handlers import (
     show_loading_and_start,
@@ -39,6 +40,9 @@ def create_app() -> gr.Blocks:
         
         # === Particles Background ===
         gr.HTML(create_particles_html())
+        
+        # === YouTube Background Audio (persistent, outside all sections) ===
+        gr.HTML(create_youtube_player_html())
         
         # === Section 1: Landing Page ===
         with gr.Column(visible=True, elem_classes="landing-section") as landing_section:

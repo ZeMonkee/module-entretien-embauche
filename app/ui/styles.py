@@ -731,6 +731,46 @@ button {
     overflow-y: auto !important;
 }
 
+/* === Music Toggle Button === */
+.music-toggle-btn {
+    position: fixed !important;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50% !important;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border) !important;
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 9999;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    padding: 0 !important;
+}
+
+.music-toggle-btn:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 25px rgba(102, 126, 234, 0.5) !important;
+    border-color: rgba(102, 126, 234, 0.5) !important;
+}
+
+.music-toggle-btn.music-on {
+    background: var(--gradient-primary) !important;
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.6);
+    animation: musicPulse 2s infinite;
+}
+
+@keyframes musicPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
+    50% { box-shadow: 0 0 35px rgba(102, 126, 234, 0.7); }
+}
+
 /* === Footer === */
 .footer {
     text-align: center;

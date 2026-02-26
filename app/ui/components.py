@@ -46,6 +46,93 @@ def create_landing_page() -> str:
     """
 
 
+def create_youtube_player_html() -> str:
+    """Create the persistent YouTube background audio player and toggle button.
+    
+    Uses an <img onload> trick to bootstrap JavaScript execution because
+    Gradio's gr.HTML() uses innerHTML which does NOT execute <script> tags,
+    and Gradio 6's js= parameter is unreliable.
+    
+    This must be placed OUTSIDE of any section that gets hidden/shown,
+    so the player persists across page navigation.
+    """
+    return """
+        <!-- YouTube Background Audio Player (persistent, never hidden) -->
+        <div id="yt-player-container" style="position:fixed; top:-9999px; left:-9999px; width:320px; height:240px; overflow:hidden; pointer-events:none; z-index:-1;">
+            <div id="yt-bg-player"></div>
+        </div>
+
+        <button id="music-toggle-btn" class="music-toggle-btn" title="Activer/Désactiver la musique"
+                onclick="window.toggleMusic && window.toggleMusic()">
+            🔇
+        </button>
+
+        <!-- Bootstrap JS via img onload (workaround for Gradio innerHTML) -->
+        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+             onload="
+                if (window._ytBgInitialized) return;
+                window._ytBgInitialized = true;
+                window.ytPlayer = null;
+                window.isMuted = true;
+                window._ytPlayerReady = false;
+
+                window._ytCreatePlayer = function() {
+                    var c = document.getElementById('yt-bg-player');
+                    if (!c) { setTimeout(window._ytCreatePlayer, 500); return; }
+                    window.ytPlayer = new YT.Player('yt-bg-player', {
+                        videoId: 'pyBEvMXVfL0',
+                        playerVars: {
+                            autoplay: 1, loop: 1,
+                            playlist: 'pyBEvMXVfL0',
+                            controls: 0, disablekb: 1, fs: 0,
+                            modestbranding: 1, rel: 0,
+                            origin: window.location.origin
+                        },
+                        events: {
+                            onReady: function(e) {
+                                window._ytPlayerReady = true;
+                                e.target.setVolume(50);
+                                e.target.mute();
+                                e.target.playVideo();
+                            },
+                            onStateChange: function(e) {
+                                if (e.data === YT.PlayerState.ENDED) e.target.playVideo();
+                            }
+                        }
+                    });
+                };
+
+                window.onYouTubeIframeAPIReady = function() { window._ytCreatePlayer(); };
+
+                if (window.YT && window.YT.Player) {
+                    window._ytCreatePlayer();
+                } else {
+                    var t = document.createElement('script');
+                    t.src = 'https://www.youtube.com/iframe_api';
+                    document.head.appendChild(t);
+                }
+
+                window.toggleMusic = function() {
+                    var btn = document.getElementById('music-toggle-btn');
+                    if (!window._ytPlayerReady || !window.ytPlayer) return;
+                    if (window.isMuted) {
+                        window.ytPlayer.unMute();
+                        window.ytPlayer.setVolume(50);
+                        window.ytPlayer.playVideo();
+                        btn.textContent = '🔊';
+                        btn.classList.add('music-on');
+                    } else {
+                        window.ytPlayer.mute();
+                        btn.textContent = '🔇';
+                        btn.classList.remove('music-on');
+                    }
+                    window.isMuted = !window.isMuted;
+                };
+             "
+             style="display:none">
+    """
+
+
 def create_step_header(current_step: int) -> str:
     """
     Create the step progress header for the wizard.
