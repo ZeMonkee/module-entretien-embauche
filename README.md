@@ -89,6 +89,72 @@ model = WhisperModel("medium", compute_type="int8", device="cpu")
 ```
 
 
+## Architecture Technique
+
+```mermaid
+graph TB
+    subgraph Interface["🖥️ Interface Utilisateur"]
+        Gradio["Gradio App<br/>(Multi-page Wizard)"]
+        Theme["Theme & Styles"]
+        Components["Composants UI"]
+        Handlers["Event Handlers"]
+    end
+
+    subgraph Services["⚙️ Couche Services"]
+        LLM["LLMService<br/>(Génération IA)"]
+        Audio["AudioService<br/>(Transcription vocale)"]
+        TTS["TTSService<br/>(Synthèse vocale)"]
+        Doc["DocumentService<br/>(Extraction de texte)"]
+    end
+
+    subgraph State["📦 État"]
+        InterviewState["InterviewState<br/>(Session utilisateur)"]
+        Settings["Settings<br/>(.env / config)"]
+    end
+
+    subgraph External["🌐 Services Externes"]
+        Ollama["Ollama API<br/>(LLaMA 3.1)"]
+        SSH["Tunnel SSH<br/>(optionnel)"]
+        Whisper["Faster Whisper<br/>(STT local)"]
+        EdgeTTS["Microsoft Edge TTS<br/>(voix naturelle, en ligne)"]
+        Pyttsx3["pyttsx3 / SAPI5<br/>(voix robotique, hors ligne)"]
+    end
+
+    Gradio --> Handlers
+    Handlers --> LLM
+    Handlers --> Audio
+    Handlers --> TTS
+    Handlers --> Doc
+    Handlers --> InterviewState
+
+    LLM -->|"HTTP POST"| Ollama
+    LLM -.->|"si configuré"| SSH
+    SSH -->|"tunnel sécurisé"| Ollama
+
+    Audio --> Whisper
+    TTS -->|"priorité"| EdgeTTS
+    TTS -.->|"fallback"| Pyttsx3
+
+    Doc -->|"résumé CV"| LLM
+
+    Settings --> LLM
+    Settings --> Audio
+    Settings --> TTS
+
+    Components --> Gradio
+    Theme --> Gradio
+
+    classDef ui fill:#6366f1,stroke:#4f46e5,color:#fff
+    classDef service fill:#0ea5e9,stroke:#0284c7,color:#fff
+    classDef state fill:#f59e0b,stroke:#d97706,color:#fff
+    classDef external fill:#10b981,stroke:#059669,color:#fff
+
+    class Gradio,Theme,Components,Handlers ui
+    class LLM,Audio,TTS,Doc service
+    class InterviewState,Settings state
+    class Ollama,SSH,Whisper,EdgeTTS,Pyttsx3 external
+```
+
 ## Licence
 
 This project is owned by **Formasup Odyssée**. 
